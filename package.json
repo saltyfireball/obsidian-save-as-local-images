@@ -1,0 +1,29 @@
+{
+	"name": "obsidian-save-as-local-images",
+	"version": "1.0.0",
+	"description": "Download all remote images in the current note and save them locally to your vault's attachment folder.",
+	"main": "main.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json"
+	},
+	"keywords": [
+		"obsidian",
+		"plugin"
+	],
+	"license": "MIT",
+	"devDependencies": {
+		"@types/node": "^16.11.6",
+		"@typescript-eslint/parser": "^8.56.1",
+		"esbuild": "0.25.5",
+		"eslint": "^9.39.3",
+		"eslint-plugin-obsidianmd": "^0.1.9",
+		"tslib": "2.4.0",
+		"typescript": "^5.8.3"
+	},
+	"dependencies": {
+		"obsidian": "latest"
+	}
+}
