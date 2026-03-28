@@ -15,6 +15,9 @@ function looksLikeImage(url: string): boolean {
 	return IMAGE_EXTENSIONS.some((ext) => cleaned.endsWith(ext));
 }
 
+// Match bare image URLs in frontmatter (key: https://...)
+const FRONTMATTER_URL_RE = /^[a-zA-Z_-]+:\s*(https?:\/\/\S+)/gm;
+
 export function findRemoteImageUrls(content: string): string[] {
 	const urls = new Set<string>();
 
@@ -22,6 +25,20 @@ export function findRemoteImageUrls(content: string): string[] {
 		pattern.lastIndex = 0;
 		let match: RegExpExecArray | null;
 		while ((match = pattern.exec(content)) !== null) {
+			const url = (match[1] ?? "").trim();
+			if (url && looksLikeImage(url)) {
+				urls.add(url);
+			}
+		}
+	}
+
+	// Also check frontmatter for bare image URLs
+	const fmMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+	if (fmMatch) {
+		const frontmatter = fmMatch[1];
+		FRONTMATTER_URL_RE.lastIndex = 0;
+		let match: RegExpExecArray | null;
+		while ((match = FRONTMATTER_URL_RE.exec(frontmatter)) !== null) {
 			const url = (match[1] ?? "").trim();
 			if (url && looksLikeImage(url)) {
 				urls.add(url);
