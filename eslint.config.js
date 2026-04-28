@@ -15,6 +15,7 @@ export default defineConfig([
         setTimeout: "readonly",
         clearTimeout: "readonly",
         localStorage: "readonly",
+        console: "readonly",
       },
     },
     rules: {

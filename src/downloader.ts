@@ -59,6 +59,21 @@ function escapeForRegex(str: string): string {
 	return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+/**
+ * Format a vault-relative path for use inside a markdown image link.
+ * Wraps with angle brackets when the path contains characters that are
+ * unsafe in `![](path)` syntax: whitespace, parens, or angle brackets.
+ * Avoids URL-encoding (encodeURIComponent over-encodes commas/parens,
+ * which Obsidian's link resolver does not reliably decode).
+ */
+function formatMarkdownLinkTarget(target: string): string {
+	if (!target) return target;
+	if (/[\s()<>]/.test(target)) {
+		return `<${target}>`;
+	}
+	return target;
+}
+
 function collapseLinkedImages(content: string): string {
 	const linkedImageRe = /\[!\[([^\]]*)\]\(([^)]+)\)\]\(([^)"]+)(?:\s+"[^"]*")?\s*\)/g;
 	return content.replace(linkedImageRe, (_match, alt: string, imgSrc: string, linkHref: string) => {
@@ -136,9 +151,9 @@ export async function downloadAndReplaceImages(
 
 	let updatedContent = content;
 	for (const [url, localPath] of urlToLocal) {
-		const encoded = localPath.split("/").map(encodeURIComponent).join("/");
+		const formatted = formatMarkdownLinkTarget(localPath);
 		const pattern = new RegExp(escapeForRegex(url), "g");
-		updatedContent = updatedContent.replace(pattern, encoded);
+		updatedContent = updatedContent.replace(pattern, formatted);
 	}
 
 	updatedContent = collapseLinkedImages(updatedContent);
