@@ -1,30 +1,47 @@
 # Save as Local Images
 
-An [Obsidian](https://obsidian.md) plugin that downloads all remote/external images in the current note and saves them locally to your vault's attachment folder. After downloading, every URL is rewritten to point to the local copy.
+An [Obsidian](https://obsidian.md) plugin that downloads remote/external images and saves them locally to your vault. After downloading, every URL is rewritten to point to the local copy.
 
 Works on both desktop and mobile.
 
 ## Features
 
-- **One-command image download** -- open the command palette and run "Save all remote images locally"
-- **Automatic folder structure** -- images are saved under your vault's configured attachment folder, nested by the note's path (e.g. `attachments/games/re/game1/`)
-- **Supports all image formats** -- markdown images `![alt](url)`, HTML `<img src="url">` tags, and wiki embeds `![[url]]`
-- **URL rewriting** -- after saving, all remote URLs in the note are replaced with local file paths
-- **Unique filenames** -- each downloaded image gets a unique ID-based filename to avoid collisions
-- **Content-type detection** -- file extensions are determined from the HTTP response content-type header, falling back to the URL extension
-- **Error handling** -- failed downloads are reported individually without stopping the rest
-- **Progress notices** -- shows how many images were found, saved, and any failures (can be disabled in settings)
+- **Save images in a single note** -- command palette: "Save all remote images locally"
+- **Save images for a whole folder (recursive)** -- right-click any folder in the file explorer and choose "Save all remote images locally". Walks every Markdown note in the folder and its subfolders, downloads remote images, rewrites URLs in place, and reports a summary.
+- **Automatic folder structure** -- images are saved under your vault's configured attachment folder, nested by the note's path (e.g. `attachments/games/re/game1/`).
+- **Supports all common image syntaxes** in the body of the note:
+  - Markdown: `![alt](url)`
+  - HTML: `<img src="url">`
+  - Wiki embeds: `![[url]]`
+  - Linked images: `[![alt](url)](url)` are collapsed to plain images after rewrite when the link and image point to the same URL.
+- **Frontmatter image URLs** -- bare image URLs in frontmatter properties (e.g. `cover: https://example.com/cover.png`) are also downloaded and rewritten.
+- **URL rewriting** -- after saving, every occurrence of the remote URL in the note is replaced with the local file path.
+- **Safe link targets** -- local paths that contain spaces, parentheses, or angle brackets are wrapped with `<...>` so Obsidian's link resolver handles them correctly (no `%2C`/`%20` over-encoding).
+- **Unique filenames** -- each downloaded image gets a 12-character random ID-based filename to avoid collisions.
+- **Content-type detection** -- file extensions are determined from the HTTP `Content-Type` header, falling back to the URL extension.
+- **Per-file error handling** -- a failed download is reported individually and does not stop the rest. Errors from folder runs are also logged to the console.
+- **Progress notices** -- shows how many images were found, saved, and any failures. Can be disabled in settings. Folder runs always show a single summary notice regardless of the setting.
 
 ## How to Use
 
-1. Open a note that contains remote images
-2. Open the command palette (`Ctrl/Cmd + P`)
-3. Run **Save as Local Images: Save all remote images locally**
-4. The plugin will:
-   - Scan the note for all remote image URLs
-   - Download each image
-   - Save it under your attachment folder, nested by the note's location
-   - Rewrite every URL in the note to point to the local file
+### Single note
+
+1. Open a note that contains remote images.
+2. Open the command palette (`Ctrl/Cmd + P`).
+3. Run **Save as Local Images: Save all remote images locally**.
+
+### Whole folder
+
+1. Right-click any folder in the file explorer.
+2. Choose **Save all remote images locally**.
+3. The plugin walks every `.md` file under that folder (recursively), downloads remote images, rewrites the URLs, and shows a summary notice when done.
+
+In both cases the plugin will:
+
+- Scan the note for remote image URLs.
+- Download each image.
+- Save it under your attachment folder, nested by the note's location.
+- Rewrite every URL in the note to point to the local file.
 
 ### Folder Structure
 
@@ -39,49 +56,31 @@ attachments/games/re/game1/
 
 ## Supported Image Patterns
 
-| Pattern | Example |
-|---------|---------|
-| Markdown | `![screenshot](https://example.com/img.png)` |
-| HTML | `<img src="https://example.com/img.png">` |
-| Wiki embed | `![[https://example.com/img.png]]` |
+| Pattern         | Example                                          |
+| --------------- | ------------------------------------------------ |
+| Markdown        | `![screenshot](https://example.com/img.png)`     |
+| HTML            | `<img src="https://example.com/img.png">`        |
+| Wiki embed      | `![[https://example.com/img.png]]`               |
+| Linked image    | `[![alt](https://.../img.png)](https://.../img.png)` |
+| Frontmatter URL | `cover: https://example.com/cover.png`           |
 
 Supported file types: PNG, JPG/JPEG, GIF, BMP, SVG, WebP, ICO, TIFF, AVIF.
 
 ## Installation
 
-### Obsidian Community Plugin (pending)
+### Obsidian Community Plugin
 
-This plugin has been submitted for review to the Obsidian community plugin directory. Once approved, you will be able to install it directly from **Settings > Community plugins > Browse** by searching for "Save as Local Images".
+This plugin is available in the official Obsidian community plugin directory. Install it from **Settings > Community plugins > Browse** and search for "Save as Local Images" or "Save as Local Images by saltyfireball".
 
-### Using BRAT
+Community plugin page: <https://community.obsidian.md/plugins/sfb-save-as-local-images>
 
-You can install this plugin right now using the [BRAT](https://github.com/TfTHacker/obsidian42-brat) plugin:
+## More Plugins by saltyfireball
 
-1. Install BRAT from **Settings > Community plugins > Browse** (search for "BRAT" by TfTHacker)
-2. Open the BRAT settings
-3. Under the **Beta plugins** section, click **Add beta plugin**
-
-   ![BRAT beta plugin list](assets/brat_example_beta_plugin_list.png)
-
-4. In the overlay, enter this plugin's repository: `https://github.com/saltyfireball/obsidian-save-as-local-images` (or just `saltyfireball/obsidian-save-as-local-images`)
-
-   ![BRAT add beta plugin](assets/brat_example_beta_modal.png)
-
-5. Leave the version set to latest
-
-   ![BRAT beta plugin filled](assets/brat_example_beta_modal_filled.png)
-
-6. Click **Add plugin**
-
-### Manual
-
-1. Download the latest release from the [Releases](https://github.com/saltyfireball/obsidian-save-as-local-images/releases) page
-2. Copy `main.js` and `manifest.json` into your vault's `.obsidian/plugins/sfb-save-as-local-images/` directory
-3. Enable the plugin in **Settings > Community plugins**
+Browse all of my published Obsidian plugins on my profile: <https://community.obsidian.md/users/saltyfireball>
 
 ## Settings
 
-- **Show progress notices** -- display notices showing how many images were found, downloaded, and any errors (enabled by default)
+- **Show progress notices** -- display notices showing how many images were found, downloaded, and any errors (enabled by default). Applies to single-note runs; folder runs always show one summary notice.
 
 ## License
 
